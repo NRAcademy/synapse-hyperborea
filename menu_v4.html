@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#07040b">
+  <title>SYNAPSE — Центральная информационная система</title>
+  <style>
+    :root {
+      --bg: #07040b;
+      --red-deep: #14081a;
+      --red-dark: #3a1442;
+      --red: #6e2455;
+      --red-bright: #a8405f;
+      --red-hot: #cf6a86;
+      --yellow: #dcc48e;
+      --text: #f3ecf4;
+      --muted: #bba3c4;
+      --line: rgba(168, 90, 140, .6);
+      --line-soft: rgba(168, 90, 140, .3);
+      --mono: "Consolas", "Lucida Console", "Courier New", ui-monospace, monospace;
+      --scan: repeating-linear-gradient(0deg, rgba(200, 120, 190, .13) 0 1px, transparent 1px 4px);
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      color: var(--text);
+      font-family: var(--mono);
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(120, 50, 140, .28), transparent 70%),
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(150,90,170,.08) 48px),
+        repeating-linear-gradient(90deg, transparent 0 47px, rgba(150,90,170,.08) 48px),
+        var(--bg);
+    }
+
+    .wrap { width: min(100%, 1040px); margin: 0 auto; }
+
+    /* ---------- Вкладка-файл ---------- */
+    .tab {
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      max-width: 100%;
+      padding: 14px 70px 14px 28px;
+      color: #fff;
+      font-size: clamp(16px, 3vw, 30px);
+      font-weight: 700;
+      letter-spacing: -.5px;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+      background: linear-gradient(100deg, #5a2c86, #8a3358 70%, #a8405f);
+      border: 1px solid var(--red-bright);
+      border-bottom: 0;
+      clip-path: polygon(0 0, calc(100% - 38px) 0, 100% 38px, 100% 100%, 0 100%);
+      text-shadow: 2px 0 rgba(220,80,130,.5), -2px 0 rgba(120,160,255,.25);
+    }
+
+    /* ---------- Основная панель ---------- */
+    .sheet {
+      position: relative;
+      margin-top: -1px;
+      padding: 34px 34px 24px;
+      overflow: hidden;
+      border: 1px solid var(--red-bright);
+      background:
+        radial-gradient(circle at 2px 2px, rgba(190,120,200,.28) 1px, transparent 1.5px) 0 0 / 9px 9px,
+        linear-gradient(165deg, #3d2260 0%, #4d1a40 36%, #2a0f22 66%, #0d0610 100%);
+      background-size: 9px 9px, auto;
+      background-repeat: repeat, no-repeat;
+      box-shadow: 0 0 50px rgba(110, 40, 130, .3), inset 0 0 90px rgba(0,0,0,.55);
+    }
+    .sheet::before {   /* мягкий перелив + строчная развёртка */
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, transparent 20%, rgba(0,0,0,.55)),
+        radial-gradient(ellipse 50% 35% at 70% 55%, rgba(190,80,150,.12), transparent 70%);
+    }
+    .squares {
+      position: absolute; top: 14px; right: 18px;
+      display: flex; gap: 6px;
+    }
+    .squares i { width: 12px; height: 12px; border: 1.5px solid var(--red-hot); }
+    .squares i:nth-child(2) { background: var(--red-hot); }
+    .content { position: relative; z-index: 1; }
+
+    /* ---------- Текстовый блок с красной планкой ---------- */
+    .block {
+      position: relative;
+      padding: 14px 20px 15px 24px;
+      background: linear-gradient(90deg, rgba(120,45,110,.55), rgba(70,25,70,.42) 70%, rgba(40,14,44,.32));
+      border-left: 6px solid var(--red-bright);
+      transition: background .25s, border-color .25s;
+    }
+    .hl-y { color: var(--yellow); font-style: italic; }
+    .hl-r {
+      color: #fff; font-weight: 700;
+      background: var(--red-bright);
+      padding: 0 .35em;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(21px, 3.6vw, 34px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -.5px;
+      text-shadow: 2px 0 rgba(220,80,130,.4), -1px 0 rgba(120,160,255,.2);
+    }
+    .subtitle { margin: 0; font-size: clamp(15px, 2.2vw, 20px); }
+    header { margin-bottom: 28px; }
+
+    /* ---------- Раскладка ---------- */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 26px;
+      align-items: start;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 14px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .section-head span { color: var(--muted); font-size: 12px; letter-spacing: 1px; }
+
+    /* ---------- Меню ---------- */
+    .menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .menu a {
+      --hc: var(--yellow);
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "title tag" "desc desc";
+      column-gap: 14px;
+      row-gap: 6px;
+      align-items: center;
+      padding: 14px 18px 15px 24px;
+      color: var(--text);
+      text-decoration: none;
+      background: linear-gradient(90deg, rgba(120,45,110,.55), rgba(70,25,70,.42) 70%, rgba(40,14,44,.32));
+      border-left: 6px solid var(--red-bright);
+      transition: color .2s, background .2s, border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .menu a::after {   /* строчная развёртка при наведении */
+      content: "";
+      position: absolute; inset: 0;
+      background: var(--scan);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .menu .name { grid-area: title; font-size: 20px; font-weight: 700; line-height: 1.2; }
+    .menu .tag {
+      grid-area: tag;
+      padding: 2px 8px;
+      color: #fff;
+      background: var(--red-bright);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      transition: background .2s, color .2s;
+    }
+    .menu .desc { grid-area: desc; color: var(--muted); font-size: 14px; line-height: 1.5; transition: color .2s; }
+
+    .menu a:hover,
+    .menu a:focus-visible {
+      color: var(--hc);
+      border-left-color: var(--hc);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--hc) 28%, #2e1238), rgba(60,22,62,.55) 75%, rgba(40,14,44,.4));
+      box-shadow: 0 0 22px color-mix(in srgb, var(--hc) 28%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--hc) 40%, transparent);
+      transform: translateX(6px);
+      outline: none;
+      text-shadow: 1.5px 0 rgba(220,80,130,.4), -1px 0 rgba(120,160,255,.2);
+    }
+    .menu a:hover::after, .menu a:focus-visible::after { opacity: 1; }
+    .menu a:hover .tag, .menu a:focus-visible .tag { background: var(--hc); color: #1a0b22; }
+    .menu a:hover .desc, .menu a:focus-visible .desc { color: var(--text); text-shadow: none; }
+
+    /* ---------- Правая панель-терминал ---------- */
+    .terminal {
+      --hc: var(--yellow);
+      position: sticky;
+      top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card {                         /* карточка как у персонажей на референсе */
+      position: relative;
+      aspect-ratio: 1 / 1.05;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--red-bright);
+      background: linear-gradient(180deg, rgba(105,45,120,.55), rgba(32,12,38,.88));
+      overflow: hidden;
+      transition: border-color .25s;
+    }
+    .card::before {                 /* красный уголок */
+      content: ""; position: absolute; top: 0; left: 0; z-index: 2;
+      border-top: 18px solid var(--red-hot);
+      border-right: 18px solid transparent;
+    }
+    .card::after {                  /* строчная развёртка */
+      content: ""; position: absolute; inset: 0; z-index: 2;
+      background: var(--scan);
+      pointer-events: none;
+    }
+    .card img {
+      position: relative;
+      max-width: 82%; max-height: 82%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(200,100,190,.5));
+      transition: opacity .18s;
+    }
+    .card img.swap { opacity: 0; }
+    .card .fallback { display: none; width: 64px; height: 64px; color: var(--red-hot); }
+    .card.no-img img { display: none; }
+    .card.no-img .fallback { display: block; }
+    .card .cap {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+      display: flex; justify-content: space-between; gap: 8px;
+      padding: 2px 8px;
+      background: var(--red-bright);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .terminal h3 {
+      margin: 0;
+      color: var(--hc);
+      font-size: 26px;
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1.15;
+      text-shadow: 2px 0 rgba(220,80,130,.45), -1.5px 0 rgba(120,160,255,.25);
+      transition: color .2s;
+    }
+    .terminal .block { border-left-color: var(--hc); font-size: 15px; line-height: 1.55; }
+    .terminal .status {
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .5px;
+      overflow-wrap: anywhere;
+    }
+    .status i {
+      display: inline-block; width: 8px; height: 8px; margin-right: 8px;
+      background: var(--hc);
+      box-shadow: 0 0 8px var(--hc);
+      animation: blink 1.6s steps(2, jump-none) infinite;
+    }
+    @keyframes blink { 50% { opacity: .25; } }
+
+    .footer {
+      display: flex; justify-content: space-between; align-items: flex-end; gap: 15px;
+      margin-top: 30px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+    .wordmark { text-align: right; font-weight: 700; font-size: 22px; line-height: 1; letter-spacing: 3px; }
+    .wordmark span { display: block; color: transparent; -webkit-text-stroke: 1.5px var(--red-hot); }
+
+    /* ---------- Планшет ---------- */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .terminal { position: static; order: -1; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px 14px; }
+      .terminal .card { grid-row: 1 / span 4; aspect-ratio: 1 / 1.1; }
+    }
+
+    /* ---------- Телефон ---------- */
+    @media (max-width: 560px) {
+      body { padding: 8px; padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+      .tab { padding: 10px 52px 10px 14px; font-size: 15px; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%); }
+      .sheet { padding: 20px 12px 18px; }
+      .squares { top: 8px; right: 10px; }
+      .squares i { width: 9px; height: 9px; }
+      header { margin-bottom: 20px; }
+      .layout { gap: 20px; }
+
+      .terminal { grid-template-columns: 104px minmax(0, 1fr); gap: 10px 12px; }
+      .terminal .card .cap { font-size: 10px; padding: 1px 5px; }
+      .terminal h3 { font-size: 21px; align-self: end; }
+      .terminal .block { font-size: 13.5px; padding: 10px 12px 11px 14px; border-left-width: 4px; }
+      .terminal .block:nth-of-type(2) { grid-column: 1 / -1; }
+      .terminal .status { grid-column: 1 / -1; }
+      .terminal .card { grid-row: 1; grid-column: 1; }
+      .terminal h3 { grid-column: 2; grid-row: 1; }
+      .terminal .block:first-of-type { grid-column: 1 / -1; }
+
+      .section-head h2 { font-size: 18px; }
+      .section-head span { font-size: 10.5px; }
+      .menu a { padding: 12px 12px 13px 16px; min-height: 64px; grid-template-columns: 1fr; grid-template-areas: "title" "tag" "desc"; row-gap: 6px; border-left-width: 5px; }
+      .menu .tag { justify-self: start; }
+      .menu .name { font-size: 18px; }
+      .menu .desc { font-size: 13.5px; }
+      .menu a:hover, .menu a:focus-visible, .menu a:active { transform: none; }
+
+      .footer { flex-direction: column; align-items: flex-start; }
+      .wordmark { text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="tab">SYNAPSE_00_INTERNAL_NETWORK</div>
+
+    <main class="sheet">
+      <div class="squares" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <div class="content">
+        <header class="block">
+          <h1>Центр синхро-биологических исследований</h1>
+          <p class="subtitle"><span class="hl-y">Центральная информационная система</span></p>
+        </header>
+
+        <div class="layout">
+          <nav aria-label="Разделы системы">
+            <div class="section-head">
+              <h2>Разделы системы</h2>
+              <span>NAVIGATION / 00</span>
+            </div>
+            <ul class="menu">
+              <li><a href="#about" style="--hc:#e0a27a" data-name="О проекте" data-tag="PROJECT OVERVIEW" data-text="Общая информация о Гиперборее, Вратах и предпосылках создания Центра.">
+                <span class="name">О проекте</span><span class="tag">PROJECT OVERVIEW</span>
+                <span class="desc">Общая информация о Гиперборее, Вратах и предпосылках создания Центра.</span></a></li>
+
+              <li><a href="#database" style="--hc:#d98aa0" data-name="База данных" data-tag="DATABASE" data-text="Основные сведения о мире, организациях, технологиях и терминологии.">
+                <span class="name">База данных</span><span class="tag">DATABASE</span>
+                <span class="desc">Основные сведения о мире, организациях, технологиях и терминологии.</span></a></li>
+
+              <li><a href="#research" style="--hc:#e6d3a0" data-name="Исследовательский отдел" data-tag="RESEARCH DIVISION" data-text="Научная деятельность, Врата, синхронизация и синхро-биологические процессы.">
+                <span class="name">Исследовательский отдел</span><span class="tag">RESEARCH DIVISION</span>
+                <span class="desc">Научная деятельность, Врата, синхронизация и синхро-биологические процессы.</span></a></li>
+
+              <li><a href="#sentinels" style="--hc:#d4606e" data-name="Сентинелы" data-tag="SENTINEL PERSONNEL" data-icon="assets/Esper_sticker.png" data-text="Классификация, способности, особенности и служебная информация.">
+                <span class="name">Сентинелы</span><span class="tag">SENTINEL PERSONNEL</span>
+                <span class="desc">Классификация, способности, особенности и служебная информация.</span></a></li>
+
+              <li><a href="#guides" style="--hc:#dcc48e" data-name="Гиды" data-tag="GUIDE PERSONNEL" data-icon="assets/Guide_sticker.png" data-text="Классификация, способности и особенности гидов.">
+                <span class="name">Гиды</span><span class="tag">GUIDE PERSONNEL</span>
+                <span class="desc">Классификация, способности и особенности гидов.</span></a></li>
+
+              <li><a href="#residential" style="--hc:#e8cfe0" data-name="Жилой комплекс" data-tag="RESIDENTIAL SECTOR" data-text="Общежития, условия проживания и инфраструктура.">
+                <span class="name">Жилой комплекс</span><span class="tag">RESIDENTIAL SECTOR</span>
+                <span class="desc">Общежития, условия проживания и инфраструктура.</span></a></li>
+
+              <li><a href="#protocols" style="--hc:#b9a0e0" data-name="Регламенты" data-tag="INTERNAL PROTOCOLS" data-text="Правила взаимодействия, служебные положения и процедуры.">
+                <span class="name">Регламенты</span><span class="tag">INTERNAL PROTOCOLS</span>
+                <span class="desc">Правила взаимодействия, служебные положения и процедуры.</span></a></li>
+            </ul>
+          </nav>
+
+          <aside class="terminal" id="terminal" aria-live="polite">
+            <div class="card" id="frame">
+              <img id="sticker" src="assets/SEMA_Research_Institute_Sticker.png" alt="">
+              <svg class="fallback" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0l2.4 9.6L24 12l-9.6 2.4L12 24l-2.4-9.6L0 12l9.6-2.4z"/></svg>
+              <div class="cap"><span>SYNAPSE</span><span>SYSTEM</span></div>
+            </div>
+            <h3 id="t-title">Добро пожаловать</h3>
+            <div class="block" id="t-text">Доступ к внутренней информационной системе Центра синхро-биологических исследований.</div>
+            <div class="block" id="t-extra">Выберите необходимый раздел для просмотра материалов и служебной документации.</div>
+            <div class="status"><i></i><span id="t-status">SYSTEM STATUS / OPERATIONAL</span></div>
+          </aside>
+        </div>
+
+        <footer class="footer">
+          <span>SYNAPSE // INTERNAL NETWORK // ACCESS: BASIC</span>
+          <div class="wordmark"><span>SYNAPSE</span>SYSTEM</div>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var DEFAULT_ICON = 'assets/SEMA_Research_Institute_Sticker.png';
+      var term = document.getElementById('terminal');
+      var frame = document.getElementById('frame');
+      var img = document.getElementById('sticker');
+      var title = document.getElementById('t-title');
+      var text = document.getElementById('t-text');
+      var extra = document.getElementById('t-extra');
+      var status = document.getElementById('t-status');
+      var def = {
+        title: title.textContent, text: text.textContent,
+        extra: extra.textContent, status: status.textContent
+      };
+
+      [DEFAULT_ICON, 'assets/Esper_sticker.png', 'assets/Guide_sticker.png'].forEach(function (s) { new Image().src = s; });
+
+      img.addEventListener('error', function () { frame.classList.add('no-img'); });
+      img.addEventListener('load', function () { frame.classList.remove('no-img'); });
+
+      function setIcon(src) {
+        if (img.getAttribute('src') === src) return;
+        img.classList.add('swap');
+        setTimeout(function () { img.setAttribute('src', src); img.classList.remove('swap'); }, 120);
+      }
+
+      function show(a) {
+        var c = a.style.getPropertyValue('--hc');
+        term.style.setProperty('--hc', c);
+        frame.style.borderColor = c;
+        title.textContent = a.dataset.name;
+        text.textContent = a.dataset.text;
+        extra.textContent = 'Нажмите, чтобы открыть раздел.';
+        status.textContent = 'SECTION / ' + a.dataset.tag;
+        setIcon(a.dataset.icon || DEFAULT_ICON);
+      }
+      function reset() {
+        term.style.removeProperty('--hc');
+        frame.style.borderColor = '';
+        title.textContent = def.title;
+        text.textContent = def.text;
+        extra.textContent = def.extra;
+        status.textContent = def.status;
+        setIcon(DEFAULT_ICON);
+      }
+
+      document.querySelectorAll('.menu a').forEach(function (a) {
+        a.addEventListener('mouseenter', function () { show(a); });
+        a.addEventListener('focus', function () { show(a); });
+        a.addEventListener('mouseleave', reset);
+        a.addEventListener('blur', reset);
+      });
+    })();
+  </script>
+</body>
+</html>
