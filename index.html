@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#07040b">
+  <meta name="theme-color" content="#050102">
   <title>SYNAPSE — Центральная информационная система</title>
   <style>
     :root {
-      --bg: #07040b;
-      --red-deep: #14081a;
-      --red-dark: #3a1442;
-      --red: #6e2455;
-      --red-bright: #a8405f;
-      --red-hot: #cf6a86;
-      --yellow: #dcc48e;
-      --text: #f3ecf4;
-      --muted: #bba3c4;
-      --line: rgba(168, 90, 140, .6);
-      --line-soft: rgba(168, 90, 140, .3);
+      --bg: #050102;
+      --red-deep: #1a0202;
+      --red-dark: #4a0606;
+      --red: #8f0c0c;
+      --red-bright: #d81818;
+      --red-hot: #ff2a2a;
+      --yellow: #ecd84c;
+      --text: #f6ecec;
+      --muted: #d1a3a3;
+      --line: rgba(216, 24, 24, .65);
+      --line-soft: rgba(216, 24, 24, .32);
       --mono: "Consolas", "Lucida Console", "Courier New", ui-monospace, monospace;
-      --scan: repeating-linear-gradient(0deg, rgba(200, 120, 190, .13) 0 1px, transparent 1px 4px);
+      --scan: repeating-linear-gradient(0deg, rgba(255, 50, 50, .16) 0 1px, transparent 1px 4px);
     }
 
     * { box-sizing: border-box; }
@@ -31,9 +31,9 @@
       color: var(--text);
       font-family: var(--mono);
       background:
-        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(120, 50, 140, .28), transparent 70%),
-        repeating-linear-gradient(0deg, transparent 0 47px, rgba(150,90,170,.08) 48px),
-        repeating-linear-gradient(90deg, transparent 0 47px, rgba(150,90,170,.08) 48px),
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(143, 12, 12, .22), transparent 70%),
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(216,24,24,.07) 48px),
+        repeating-linear-gradient(90deg, transparent 0 47px, rgba(216,24,24,.07) 48px),
         var(--bg);
     }
 
@@ -52,11 +52,11 @@
       letter-spacing: -.5px;
       line-height: 1.15;
       overflow-wrap: anywhere;
-      background: linear-gradient(100deg, #5a2c86, #8a3358 70%, #a8405f);
+      background: linear-gradient(180deg, #b01212, #6d0707);
       border: 1px solid var(--red-bright);
       border-bottom: 0;
       clip-path: polygon(0 0, calc(100% - 38px) 0, 100% 38px, 100% 100%, 0 100%);
-      text-shadow: 2px 0 rgba(220,80,130,.5), -2px 0 rgba(120,160,255,.25);
+      text-shadow: 2px 0 rgba(255,0,60,.55), -2px 0 rgba(0,220,255,.25);
     }
 
     /* ---------- Основная панель ---------- */
@@ -67,11 +67,11 @@
       overflow: hidden;
       border: 1px solid var(--red-bright);
       background:
-        radial-gradient(circle at 2px 2px, rgba(190,120,200,.28) 1px, transparent 1.5px) 0 0 / 9px 9px,
-        linear-gradient(165deg, #3d2260 0%, #4d1a40 36%, #2a0f22 66%, #0d0610 100%);
+        radial-gradient(circle at 2px 2px, rgba(216,24,24,.35) 1px, transparent 1.5px) 0 0 / 9px 9px,
+        linear-gradient(180deg, #4a0606 0%, #260303 38%, #0c0202 100%);
       background-size: 9px 9px, auto;
       background-repeat: repeat, no-repeat;
-      box-shadow: 0 0 50px rgba(110, 40, 130, .3), inset 0 0 90px rgba(0,0,0,.55);
+      box-shadow: 0 0 50px rgba(160, 0, 0, .28), inset 0 0 90px rgba(0,0,0,.55);
     }
     .sheet::before {   /* мягкий перелив + строчная развёртка */
       content: "";
@@ -79,7 +79,7 @@
       pointer-events: none;
       background:
         linear-gradient(180deg, transparent 20%, rgba(0,0,0,.55)),
-        radial-gradient(ellipse 50% 35% at 70% 55%, rgba(190,80,150,.12), transparent 70%);
+        radial-gradient(ellipse 50% 35% at 70% 55%, rgba(255,30,30,.10), transparent 70%);
     }
     .squares {
       position: absolute; top: 14px; right: 18px;
@@ -93,7 +93,7 @@
     .block {
       position: relative;
       padding: 14px 20px 15px 24px;
-      background: linear-gradient(90deg, rgba(120,45,110,.55), rgba(70,25,70,.42) 70%, rgba(40,14,44,.32));
+      background: linear-gradient(90deg, rgba(143,12,12,.55), rgba(60,4,4,.45) 70%, rgba(40,3,3,.35));
       border-left: 6px solid var(--red-bright);
       transition: background .25s, border-color .25s;
     }
@@ -110,7 +110,7 @@
       font-weight: 700;
       line-height: 1.2;
       letter-spacing: -.5px;
-      text-shadow: 2px 0 rgba(220,80,130,.4), -1px 0 rgba(120,160,255,.2);
+      text-shadow: 2px 0 rgba(255,0,60,.4), -1px 0 rgba(0,220,255,.2);
     }
     .subtitle { margin: 0; font-size: clamp(15px, 2.2vw, 20px); }
     header { margin-bottom: 28px; }
@@ -153,7 +153,7 @@
       padding: 14px 18px 15px 24px;
       color: var(--text);
       text-decoration: none;
-      background: linear-gradient(90deg, rgba(120,45,110,.55), rgba(70,25,70,.42) 70%, rgba(40,14,44,.32));
+      background: linear-gradient(90deg, rgba(143,12,12,.55), rgba(60,4,4,.45) 70%, rgba(40,3,3,.35));
       border-left: 6px solid var(--red-bright);
       transition: color .2s, background .2s, border-color .2s, box-shadow .2s, transform .2s;
     }
@@ -182,14 +182,14 @@
     .menu a:focus-visible {
       color: var(--hc);
       border-left-color: var(--hc);
-      background: linear-gradient(90deg, color-mix(in srgb, var(--hc) 28%, #2e1238), rgba(60,22,62,.55) 75%, rgba(40,14,44,.4));
+      background: linear-gradient(90deg, color-mix(in srgb, var(--hc) 30%, #3a0404), rgba(60,4,4,.55) 75%, rgba(40,3,3,.4));
       box-shadow: 0 0 22px color-mix(in srgb, var(--hc) 28%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--hc) 40%, transparent);
       transform: translateX(6px);
       outline: none;
-      text-shadow: 1.5px 0 rgba(220,80,130,.4), -1px 0 rgba(120,160,255,.2);
+      text-shadow: 1.5px 0 rgba(255,0,60,.45), -1px 0 rgba(0,220,255,.22);
     }
     .menu a:hover::after, .menu a:focus-visible::after { opacity: 1; }
-    .menu a:hover .tag, .menu a:focus-visible .tag { background: var(--hc); color: #1a0b22; }
+    .menu a:hover .tag, .menu a:focus-visible .tag { background: var(--hc); color: #1a0202; }
     .menu a:hover .desc, .menu a:focus-visible .desc { color: var(--text); text-shadow: none; }
 
     /* ---------- Правая панель-терминал ---------- */
@@ -207,7 +207,7 @@
       display: grid;
       place-items: center;
       border: 1px solid var(--red-bright);
-      background: linear-gradient(180deg, rgba(105,45,120,.55), rgba(32,12,38,.88));
+      background: linear-gradient(180deg, rgba(120,8,8,.55), rgba(30,2,2,.85));
       overflow: hidden;
       transition: border-color .25s;
     }
@@ -225,7 +225,7 @@
       position: relative;
       max-width: 82%; max-height: 82%;
       object-fit: contain;
-      filter: drop-shadow(0 0 12px rgba(200,100,190,.5));
+      filter: drop-shadow(0 0 12px rgba(255,30,30,.5));
       transition: opacity .18s;
     }
     .card img.swap { opacity: 0; }
@@ -249,7 +249,7 @@
       font-style: italic;
       font-weight: 700;
       line-height: 1.15;
-      text-shadow: 2px 0 rgba(220,80,130,.45), -1.5px 0 rgba(120,160,255,.25);
+      text-shadow: 2px 0 rgba(255,0,60,.5), -1.5px 0 rgba(0,220,255,.25);
       transition: color .2s;
     }
     .terminal .block { border-left-color: var(--hc); font-size: 15px; line-height: 1.55; }
@@ -343,31 +343,31 @@
               <span>NAVIGATION / 00</span>
             </div>
             <ul class="menu">
-              <li><a href="#about" style="--hc:#e0a27a" data-name="О проекте" data-tag="PROJECT OVERVIEW" data-text="Общая информация о Гиперборее, Вратах и предпосылках создания Центра.">
+              <li><a href="#about" style="--hc:#ff9a3c" data-name="О проекте" data-tag="PROJECT OVERVIEW" data-text="Общая информация о Гиперборее, Вратах и предпосылках создания Центра.">
                 <span class="name">О проекте</span><span class="tag">PROJECT OVERVIEW</span>
                 <span class="desc">Общая информация о Гиперборее, Вратах и предпосылках создания Центра.</span></a></li>
 
-              <li><a href="#database" style="--hc:#d98aa0" data-name="База данных" data-tag="DATABASE" data-text="Основные сведения о мире, организациях, технологиях и терминологии.">
+              <li><a href="#database" style="--hc:#ff6b8a" data-name="База данных" data-tag="DATABASE" data-text="Основные сведения о мире, организациях, технологиях и терминологии.">
                 <span class="name">База данных</span><span class="tag">DATABASE</span>
                 <span class="desc">Основные сведения о мире, организациях, технологиях и терминологии.</span></a></li>
 
-              <li><a href="#research" style="--hc:#e6d3a0" data-name="Исследовательский отдел" data-tag="RESEARCH DIVISION" data-text="Научная деятельность, Врата, синхронизация и синхро-биологические процессы.">
+              <li><a href="#research" style="--hc:#fff2a8" data-name="Исследовательский отдел" data-tag="RESEARCH DIVISION" data-text="Научная деятельность, Врата, синхронизация и синхро-биологические процессы.">
                 <span class="name">Исследовательский отдел</span><span class="tag">RESEARCH DIVISION</span>
                 <span class="desc">Научная деятельность, Врата, синхронизация и синхро-биологические процессы.</span></a></li>
 
-              <li><a href="#sentinels" style="--hc:#d4606e" data-name="Сентинелы" data-tag="SENTINEL PERSONNEL" data-icon="assets/Esper_sticker.png" data-text="Классификация, способности, особенности и служебная информация.">
+              <li><a href="#sentinels" style="--hc:#ff4d4d" data-name="Сентинелы" data-tag="SENTINEL PERSONNEL" data-icon="assets/Esper_sticker.png" data-text="Классификация, способности, особенности и служебная информация.">
                 <span class="name">Сентинелы</span><span class="tag">SENTINEL PERSONNEL</span>
                 <span class="desc">Классификация, способности, особенности и служебная информация.</span></a></li>
 
-              <li><a href="#guides" style="--hc:#dcc48e" data-name="Гиды" data-tag="GUIDE PERSONNEL" data-icon="assets/Guide_sticker.png" data-text="Классификация, способности и особенности гидов.">
+              <li><a href="#guides" style="--hc:#ecd84c" data-name="Гиды" data-tag="GUIDE PERSONNEL" data-icon="assets/Guide_sticker.png" data-text="Классификация, способности и особенности гидов.">
                 <span class="name">Гиды</span><span class="tag">GUIDE PERSONNEL</span>
                 <span class="desc">Классификация, способности и особенности гидов.</span></a></li>
 
-              <li><a href="#residential" style="--hc:#e8cfe0" data-name="Жилой комплекс" data-tag="RESIDENTIAL SECTOR" data-text="Общежития, условия проживания и инфраструктура.">
+              <li><a href="#residential" style="--hc:#ffd0d0" data-name="Жилой комплекс" data-tag="RESIDENTIAL SECTOR" data-text="Общежития, условия проживания и инфраструктура.">
                 <span class="name">Жилой комплекс</span><span class="tag">RESIDENTIAL SECTOR</span>
                 <span class="desc">Общежития, условия проживания и инфраструктура.</span></a></li>
 
-              <li><a href="#protocols" style="--hc:#b9a0e0" data-name="Регламенты" data-tag="INTERNAL PROTOCOLS" data-text="Правила взаимодействия, служебные положения и процедуры.">
+              <li><a href="#protocols" style="--hc:#ff7a45" data-name="Регламенты" data-tag="INTERNAL PROTOCOLS" data-text="Правила взаимодействия, служебные положения и процедуры.">
                 <span class="name">Регламенты</span><span class="tag">INTERNAL PROTOCOLS</span>
                 <span class="desc">Правила взаимодействия, служебные положения и процедуры.</span></a></li>
             </ul>
