@@ -6,25 +6,22 @@
   <meta name="theme-color" content="#050102">
   <title>SYNAPSE — Центральная информационная система</title>
   <style>
-:root {
-  --bg: #08060b;
-  --red-deep: #191125;
-  --red-dark: #321322;
-  --red: #5f1529;
-  --red-bright: #842b43;
-  --red-hot: #b65b70;
-  --yellow: #dcc48e;
-  --text: #f3ecf4;
-  --muted: #bba3c4;
-  --line: rgba(182, 91, 112, .6);
-  --line-soft: rgba(182, 91, 112, .3);
-  --mono: "Consolas", "Lucida Console", "Courier New", ui-monospace, monospace;
-  --scan: repeating-linear-gradient(
-    0deg,
-    rgba(182, 91, 112, .10) 0 1px,
-    transparent 1px 4px
-  );
-}
+    :root {
+      --bg: #050102;
+      --red-deep: #1a0202;
+      --red-dark: #4a0606;
+      --red: #8f0c0c;
+      --red-bright: #d81818;
+      --red-hot: #ff2a2a;
+      --yellow: #ffffff;
+      --text: #f6ecec;
+      --muted: #d1a3a3;
+      --line: rgba(216, 24, 24, .65);
+      --line-soft: rgba(216, 24, 24, .32);
+      --mono: "Consolas", "Lucida Console", "Courier New", ui-monospace, monospace;
+      --scan: repeating-linear-gradient(0deg, rgba(255, 50, 50, .16) 0 1px, transparent 1px 4px);
+    }
+
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
     body {
@@ -33,23 +30,12 @@
       padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
       color: var(--text);
       font-family: var(--mono);
-background:
-  radial-gradient(
-    ellipse 70% 50% at 50% 0%,
-    rgba(95, 21, 41, .42),
-    transparent 70%
-  ),
-  repeating-linear-gradient(
-    0deg,
-    transparent 0 47px,
-    rgba(95, 21, 41, .08) 48px
-  ),
-  repeating-linear-gradient(
-    90deg,
-    transparent 0 47px,
-    rgba(95, 21, 41, .08) 48px
-  ),
-  var(--bg);
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(143, 12, 12, .22), transparent 70%),
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(216,24,24,.07) 48px),
+        repeating-linear-gradient(90deg, transparent 0 47px, rgba(216,24,24,.07) 48px),
+        var(--bg);
+    }
 
     .wrap { width: min(100%, 1040px); margin: 0 auto; }
 
@@ -80,22 +66,11 @@ background:
       padding: 34px 34px 24px;
       overflow: hidden;
       border: 1px solid var(--red-bright);
-background:
-  radial-gradient(
-    circle at 2px 2px,
-    rgba(182, 91, 112, .22) 1px,
-    transparent 1.5px
-  ) 0 0 / 9px 9px,
-  linear-gradient(
-    145deg,
-    #5f1529 0%,
-    #421526 32%,
-    #291525 65%,
-    #191125 100%
-  );
-
-background-size: 9px 9px, auto;
-background-repeat: repeat, no-repeat;
+      background:
+        radial-gradient(circle at 2px 2px, rgba(216,24,24,.35) 1px, transparent 1.5px) 0 0 / 9px 9px,
+        linear-gradient(180deg, #4a0606 0%, #260303 38%, #0c0202 100%);
+      background-size: 9px 9px, auto;
+      background-repeat: repeat, no-repeat;
       box-shadow: 0 0 50px rgba(160, 0, 0, .28), inset 0 0 90px rgba(0,0,0,.55);
     }
     .sheet::before {   /* мягкий перелив + строчная развёртка */
@@ -277,15 +252,7 @@ background-repeat: repeat, no-repeat;
       text-shadow: 2px 0 rgba(255,0,60,.5), -1.5px 0 rgba(0,220,255,.25);
       transition: color .2s;
     }
-  .terminal .block {
-  width: 100%;
-  min-width: 0;
-  border-left-color: var(--hc);
-  font-size: 15px;
-  line-height: 1.55;
-  text-align: left;
-  justify-self: stretch;
-}
+    .terminal .block { border-left-color: var(--hc); font-size: 15px; line-height: 1.55; }
     .terminal .status {
       padding-top: 10px;
       border-top: 1px solid var(--line);
@@ -338,11 +305,6 @@ background-repeat: repeat, no-repeat;
       .terminal .card { grid-row: 1; grid-column: 1; }
       .terminal h3 { grid-column: 2; grid-row: 1; }
       .terminal .block:first-of-type { grid-column: 1 / -1; }
-      .terminal .block {
-  width: 100%;
-  justify-self: stretch;
-  text-align: left;
-}
 
       .section-head h2 { font-size: 18px; }
       .section-head span { font-size: 10.5px; }
