@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#030a10">
+  <title>SYNAPSE — Нулевое событие</title>
+  <style>
+    :root {
+      --bg: #030a10;
+      --red-deep: #04141f;
+      --red-dark: #0c3a52;
+      --red: #0e566e;
+      --red-bright: #1fb5c9;
+      --red-hot: #3ee0d0;
+      --yellow: #7fdcff;
+      --text: #e6f6f8;
+      --muted: #8fc0cc;
+      --line: rgba(31,181,201, .65);
+      --line-soft: rgba(31,181,201, .32);
+      --mono: "Consolas", "Lucida Console", "Courier New", ui-monospace, monospace;
+      --scan: repeating-linear-gradient(0deg, rgba(80,220,230, .16) 0 1px, transparent 1px 4px);
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      color: var(--text);
+      font-family: var(--mono);
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(14,86,110, .22), transparent 70%),
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(31,181,201,.07) 48px),
+        repeating-linear-gradient(90deg, transparent 0 47px, rgba(31,181,201,.07) 48px),
+        var(--bg);
+    }
+
+    .wrap { width: min(100%, 1040px); margin: 0 auto; }
+
+    /* ---------- Вкладка-файл ---------- */
+    .tab {
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      max-width: 100%;
+      padding: 14px 70px 14px 28px;
+      color: #fff;
+      font-size: clamp(16px, 3vw, 30px);
+      font-weight: 700;
+      letter-spacing: -.5px;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+      background: linear-gradient(180deg, #138aa3, #0a4357);
+      border: 1px solid var(--red-bright);
+      border-bottom: 0;
+      clip-path: polygon(0 0, calc(100% - 38px) 0, 100% 38px, 100% 100%, 0 100%);
+      text-shadow: 2px 0 rgba(0,200,255,.55), -2px 0 rgba(0,255,200,.25);
+    }
+
+    /* ---------- Основная панель ---------- */
+    .sheet {
+      position: relative;
+      margin-top: -1px;
+      padding: 34px 34px 24px;
+      overflow: hidden;
+      border: 1px solid var(--red-bright);
+      background:
+        radial-gradient(circle at 2px 2px, rgba(31,181,201,.35) 1px, transparent 1.5px) 0 0 / 9px 9px,
+        linear-gradient(180deg, #0c3a52 0%, #07202f 38%, #030a10 100%);
+      background-size: 9px 9px, auto;
+      background-repeat: repeat, no-repeat;
+      box-shadow: 0 0 50px rgba(0,140,170, .28), inset 0 0 90px rgba(0,0,0,.55);
+    }
+    .sheet::before {   /* мягкий перелив + строчная развёртка */
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, transparent 20%, rgba(0,0,0,.55)),
+        radial-gradient(ellipse 50% 35% at 70% 55%, rgba(60,220,220,.10), transparent 70%);
+    }
+    .squares {
+      position: absolute; top: 14px; right: 18px;
+      display: flex; gap: 6px;
+    }
+    .squares i { width: 12px; height: 12px; border: 1.5px solid var(--red-hot); }
+    .squares i:nth-child(2) { background: var(--red-hot); }
+    .content { position: relative; z-index: 1; }
+
+    /* ---------- Текстовый блок с красной планкой ---------- */
+    .block {
+      position: relative;
+      padding: 14px 20px 15px 24px;
+      background: linear-gradient(90deg, rgba(14,86,110,.55), rgba(8,40,60,.45) 70%, rgba(6,28,44,.35));
+      border-left: 6px solid var(--red-bright);
+      transition: background .25s, border-color .25s;
+    }
+    .hl-y { color: var(--yellow); font-style: italic; }
+    .hl-r {
+      color: #fff; font-weight: 700;
+      background: var(--red-bright);
+      padding: 0 .35em;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(21px, 3.6vw, 34px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -.5px;
+      text-shadow: 2px 0 rgba(0,200,255,.4), -1px 0 rgba(0,255,200,.2);
+    }
+    .subtitle { margin: 0; font-size: clamp(15px, 2.2vw, 20px); }
+    header { margin-bottom: 28px; }
+
+    /* ---------- Раскладка ---------- */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 26px;
+      align-items: start;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 14px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .section-head span { color: var(--muted); font-size: 12px; letter-spacing: 1px; }
+
+    /* ---------- Меню ---------- */
+    .menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .menu a {
+      --hc: var(--yellow);
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "title tag" "desc desc";
+      column-gap: 14px;
+      row-gap: 6px;
+      align-items: center;
+      padding: 14px 18px 15px 24px;
+      color: var(--text);
+      text-decoration: none;
+      background: linear-gradient(90deg, rgba(14,86,110,.55), rgba(8,40,60,.45) 70%, rgba(6,28,44,.35));
+      border-left: 6px solid var(--red-bright);
+      transition: color .2s, background .2s, border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .menu a::after {   /* строчная развёртка при наведении */
+      content: "";
+      position: absolute; inset: 0;
+      background: var(--scan);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .menu .name { grid-area: title; font-size: 20px; font-weight: 700; line-height: 1.2; }
+    .menu .tag {
+      grid-area: tag;
+      padding: 2px 8px;
+      color: #fff;
+      background: var(--red-bright);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      transition: background .2s, color .2s;
+    }
+    .menu .desc { grid-area: desc; color: var(--muted); font-size: 14px; line-height: 1.5; transition: color .2s; }
+
+    .menu a:hover,
+    .menu a:focus-visible {
+      color: var(--hc);
+      border-left-color: var(--hc);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--hc) 30%, #3a0404), rgba(8,40,60,.55) 75%, rgba(6,28,44,.4));
+      box-shadow: 0 0 22px color-mix(in srgb, var(--hc) 28%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--hc) 40%, transparent);
+      transform: translateX(6px);
+      outline: none;
+      text-shadow: 1.5px 0 rgba(0,200,255,.45), -1px 0 rgba(0,255,200,.22);
+    }
+    .menu a:hover::after, .menu a:focus-visible::after { opacity: 1; }
+    .menu a:hover .tag, .menu a:focus-visible .tag { background: var(--hc); color: #04141f; }
+    .menu a:hover .desc, .menu a:focus-visible .desc { color: var(--text); text-shadow: none; }
+
+    /* ---------- Правая панель-терминал ---------- */
+    .terminal {
+      --hc: var(--yellow);
+      position: sticky;
+      top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card {                         /* карточка как у персонажей на референсе */
+      position: relative;
+      aspect-ratio: 1 / 1.05;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--red-bright);
+      background: linear-gradient(180deg, rgba(10,70,100,.55), rgba(4,20,32,.85));
+      overflow: hidden;
+      transition: border-color .25s;
+    }
+    .card::before {                 /* красный уголок */
+      content: ""; position: absolute; top: 0; left: 0; z-index: 2;
+      border-top: 18px solid var(--red-hot);
+      border-right: 18px solid transparent;
+    }
+    .card::after {                  /* строчная развёртка */
+      content: ""; position: absolute; inset: 0; z-index: 2;
+      background: var(--scan);
+      pointer-events: none;
+    }
+    .card img {
+      position: relative;
+      max-width: 82%; max-height: 82%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(60,220,220,.5));
+      transition: opacity .18s;
+    }
+    .card img.swap { opacity: 0; }
+    .card .fallback { display: none; width: 64px; height: 64px; color: var(--red-hot); }
+    .card.no-img img { display: none; }
+    .card.no-img .fallback { display: block; }
+    .card .cap {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+      display: flex; justify-content: space-between; gap: 8px;
+      padding: 2px 8px;
+      background: var(--red-bright);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .terminal h3 {
+      margin: 0;
+      color: var(--hc);
+      font-size: 26px;
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1.15;
+      text-shadow: 2px 0 rgba(0,200,255,.5), -1.5px 0 rgba(0,255,200,.25);
+      transition: color .2s;
+    }
+    .terminal .block { border-left-color: var(--hc); font-size: 15px; line-height: 1.55; }
+    .terminal .status {
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .5px;
+      overflow-wrap: anywhere;
+    }
+    .status i {
+      display: inline-block; width: 8px; height: 8px; margin-right: 8px;
+      background: var(--hc);
+      box-shadow: 0 0 8px var(--hc);
+      animation: blink 1.6s steps(2, jump-none) infinite;
+    }
+    @keyframes blink { 50% { opacity: .25; } }
+
+    .back {
+      display: inline-block; margin: 0 0 14px; padding: 6px 12px;
+      color: var(--yellow); text-decoration: none; font-size: 13px; font-weight: 700; letter-spacing: .5px;
+      border: 1px solid var(--line); background: rgba(8,40,60,.45);
+      transition: background .2s, color .2s;
+    }
+    .back:hover, .back:focus-visible { background: var(--yellow); color: #04141f; outline: none; }
+    .card.full img { width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: cover; filter: none; }
+
+    .footer {
+      display: flex; justify-content: space-between; align-items: flex-end; gap: 15px;
+      margin-top: 30px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+    .wordmark { text-align: right; font-weight: 700; font-size: 22px; line-height: 1; letter-spacing: 3px; }
+    .wordmark span { display: block; color: transparent; -webkit-text-stroke: 1.5px var(--red-hot); }
+
+    /* ---------- Планшет ---------- */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .terminal { position: static; order: -1; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px 14px; }
+      .terminal .card { grid-row: 1 / span 4; aspect-ratio: 1 / 1.1; }
+    }
+
+    /* ---------- Телефон ---------- */
+    @media (max-width: 560px) {
+      body { padding: 8px; padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+      .tab { padding: 10px 52px 10px 14px; font-size: 15px; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%); }
+      .sheet { padding: 20px 12px 18px; }
+      .squares { top: 8px; right: 10px; }
+      .squares i { width: 9px; height: 9px; }
+      header { margin-bottom: 20px; }
+      .layout { gap: 20px; }
+
+      .terminal { grid-template-columns: 104px minmax(0, 1fr); gap: 10px 12px; }
+      .terminal .card .cap { font-size: 10px; padding: 1px 5px; }
+      .terminal h3 { font-size: 21px; align-self: end; }
+      .terminal .block { font-size: 13.5px; padding: 10px 12px 11px 14px; border-left-width: 4px; }
+      .terminal .block { grid-column: 1 / -1; }
+      .terminal .status { grid-column: 1 / -1; }
+      .terminal .card { grid-row: 1; grid-column: 1; }
+      .terminal h3 { grid-column: 2; grid-row: 1; }
+
+      .section-head h2 { font-size: 18px; }
+      .section-head span { font-size: 10.5px; }
+      .menu a { padding: 12px 12px 13px 16px; min-height: 64px; grid-template-columns: 1fr; grid-template-areas: "title" "tag" "desc"; row-gap: 6px; border-left-width: 5px; }
+      .menu .tag { justify-self: start; }
+      .menu .name { font-size: 18px; }
+      .menu .desc { font-size: 13.5px; }
+      .menu a:hover, .menu a:focus-visible, .menu a:active { transform: none; }
+
+      .footer { flex-direction: column; align-items: flex-start; }
+      .wordmark { text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  
+    /* ---------- Страница «Гиперборея» ---------- */
+    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 22px; }
+    .fact {
+      display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: stretch;
+      border: 1px solid var(--line-soft); background: rgba(6,28,44,.45);
+    }
+    .fact b {
+      padding: 8px 12px; color: #fff; background: var(--red-bright);
+      font-size: 12px; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center;
+    }
+    .fact span { padding: 8px 12px; font-size: 14px; color: var(--text); overflow-wrap: anywhere; }
+
+    .article { display: grid; gap: 14px; }
+    .article .block { --hc: var(--red-bright); border-left-color: var(--hc); }
+    .article .label {
+      display: flex; justify-content: space-between; gap: 10px; align-items: center;
+      margin: 0 0 8px; color: var(--yellow); font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .article .label em { color: var(--muted); font-style: normal; font-size: 11px; }
+    .article p { margin: 0; font-size: 16px; line-height: 1.65; }
+    .article .block:hover { border-left-color: var(--yellow); background: linear-gradient(90deg, rgba(14,86,110,.7), rgba(8,40,60,.5) 70%, rgba(6,28,44,.4)); }
+
+    .side { position: sticky; top: 18px; display: flex; flex-direction: column; gap: 12px; --hc: var(--yellow); }
+    .side h3 { margin: 0; color: var(--hc); font-size: 26px; font-style: italic; font-weight: 700; text-shadow: 2px 0 rgba(0,200,255,.5), -1.5px 0 rgba(0,255,200,.25); }
+    .side .status { padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; letter-spacing: .5px; }
+    .side .status i { display: inline-block; width: 8px; height: 8px; margin-right: 8px; background: var(--hc); box-shadow: 0 0 8px var(--hc); animation: blink 1.6s steps(2, jump-none) infinite; }
+    @keyframes blink { 50% { opacity: .25; } }
+
+    @media (max-width: 900px) {
+      .side { position: static; order: -1; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 10px 14px; align-items: end; }
+      .side .card { grid-row: 1 / span 2; aspect-ratio: 1 / 1.1; }
+      .side .status { align-self: start; }
+    }
+    @media (max-width: 560px) {
+      .facts { grid-template-columns: 1fr; }
+      .side { grid-template-columns: 104px minmax(0, 1fr); }
+      .side h3 { font-size: 21px; }
+      .side .card .cap { font-size: 10px; padding: 1px 5px; }
+      .article p { font-size: 14.5px; line-height: 1.6; }
+      .article .block { padding: 12px 12px 13px 14px; border-left-width: 4px; }
+      .fact span, .fact b { padding: 7px 10px; }
+    }
+  
+    /* ---------- Бирюзовая тема ---------- */
+    .hl-r { color: #04141f; }
+    .fact b, .card .cap { color: #04141f; }
+    .back:hover, .back:focus-visible { color: #04141f; }
+    .card.full img { filter: hue-rotate(185deg) saturate(.9) brightness(1.05); }
+    .card { background: linear-gradient(180deg, rgba(10,70,100,.55), rgba(4,20,32,.85)); }
+    .tab, h1, .side h3 { text-shadow: 1.5px 0 rgba(0,200,255,.35), -1.5px 0 rgba(0,255,200,.2); }
+    .sheet { box-shadow: 0 0 50px rgba(0,150,190,.25), inset 0 0 90px rgba(0,0,0,.55); }
+
+    .research-list {
+      margin: 10px 0 0;
+      padding-left: 22px;
+      display: grid;
+      gap: 9px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .research-list li { padding-left: 4px; }
+    .research-list strong { color: var(--yellow); }
+    @media (max-width: 560px) {
+      .research-list { font-size: 14.5px; line-height: 1.6; padding-left: 20px; }
+    }
+
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="tab">SYNAPSE_01_IRREGULARS</div>
+
+    <main class="sheet">
+      <div class="squares" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <div class="content">
+        <header class="block">
+          <h1>Центр синхро-биологических исследований</h1>
+          <p class="subtitle"><span class="hl-y">Исследовательский отдел / Отдел «Иррегуляров»</span></p>
+        </header>
+
+        <div class="layout">
+          <div>
+            <div class="section-head">
+              <h2>Отдел «Иррегуляров»</h2>
+              <span>FILE / 03</span>
+            </div>
+            
+            <div class="facts">
+              <div class="fact"><b>Тип</b><span>Специализированное подразделение</span></div>
+              <div class="fact"><b>Подчинение</b><span>Центр синхро-биологических исследований</span></div>
+              <div class="fact"><b>Основная функция</b><span>Наблюдение и сопровождение сентинелов</span></div>
+              <div class="fact"><b>Персональное 
+                сопровождение</b><span>Сентинелы B-, A- и S-рангов</span></div>
+            </div>
+            <a class="back" href="research.html">&#8592; Исследовательский отдел</a>
+
+            
+            <article class="article">
+              <section class="block">
+                <div class="label"><span>Назначение подразделения</span><em>FILE / 01</em></div>
+                <p><span class="hl-y">Отдел «Иррегуляров»</span> — специализированное подразделение Центра синхро-биологических исследований, осуществляющее наблюдение, документирование и научное сопровождение сентинелов, закреплённых за отделом.</p>
+              </section>
+
+              <section class="block">
+                <div class="label"><span>Основные задачи</span><em>FILE / 02</em></div>
+                <p>Основная задача подразделения заключается в непрерывном изучении функционального состояния сентинелов, оценке их энергетических показателей и определении степени готовности к дальнейшему выполнению служебных задач.</p>
+              </section>
+
+              <section class="block">
+                <div class="label"><span>Повседневное наблюдение</span><em>FILE / 03</em></div>
+                <p>В отличие от стандартного медицинского наблюдения, работа отдела не ограничивается периодическими обследованиями или анализом результатов боевых операций. Исследователь, закреплённый за сентинелом, собирает сведения о его повседневной активности, привычках, физическом и эмоциональном состоянии, особенностях поведения и реакции на различные внешние факторы.</p>
+              </section>
+
+              <section class="block">
+                <div class="label"><span>Документирование состояния</span><em>FILE / 04</em></div>
+                <p>Наблюдение может осуществляться как во время выполнения служебных обязанностей, так и в свободное от службы время. Полученные сведения систематизируются и используются для составления индивидуального досье, отслеживания изменений состояния и выявления потенциальных отклонений.</p>
+              </section>
+
+              <section class="block">
+                <div class="label"><span>Персональное сопровождение</span><em>FILE / 05</em></div>
+                <p>Как правило, персональное исследовательское сопровождение предоставляется сентинелам <span class="hl-y">В-, A- и S-рангов</span>. За каждым таким носителем закрепляется отдельный специалист, отвечающий за сбор информации, анализ показателей и взаимодействие с соответствующими подразделениями. В зависимости от обстоятельств исследователь может работать совместно с персональным гидом сентинела или другими иррегулярами.</p>
+              </section>
+
+              <section class="block">
+                <div class="label"><span>Состав сотрудников</span><em>FILE / 06</em></div>
+                <p>Состав сотрудников отдела не ограничивается гражданскими специалистами. Исследователями могут выступать как обычные учёные, так и <span class="hl-y">зарегистрированные бывшие служающие сентинелы или гиды</span>, обладающие необходимой квалификацией или прошедшие обучение. Однако Нью-био рангом А- и выше не могут выступать в роли исследователя. При обнаружении этого начальство может потребовать о незамедлительном переводе.</p>
+              </section>
+
+              <section class="block">
+                <div class="label"><span>Особенности деятельности</span><em>FILE / 07</em></div>
+                <p>Деятельность «Иррегуляров» имеет двойственное значение. С одной стороны, постоянное наблюдение позволяет своевременно обнаруживать угрозы здоровью носителей, предотвращать развитие критических состояний и повышать эффективность их подготовки. С другой — оно предполагает значительное ограничение личного пространства сентинелов, чья повседневная жизнь в определённой степени становится частью исследовательского процесса.</p>
+              </section>
+
+              <section class="block">
+                <div class="label"><span>Принцип работы</span><em>FILE / 08</em></div>
+                <p>Для отдела сентинел является не только военнослужащим или носителем уникальных способностей, но и объектом длительного научного наблюдения, функциональность и пригодность которого должны оставаться под постоянным контролем.</p>
+              </section>
+            </article>
+          </div>
+
+           <aside class="side">
+            <div class="card">
+              <img src="data:image/webp;base64,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" alt="Центр синхро-биологических исследований">
+              <div class="cap"><span>IRREGULARS</span><span>SYNAPSE</span></div>
+            </div>
+            <h3>Отдел «Иррегуляров»</h3>
+            <div class="status"><i></i>SECTION / IRREGULARS DIVISION</div>
+          </aside>
+        </div>
+
+        <footer class="footer">
+          <span>SYNAPSE // INTERNAL NETWORK // RESEARCH</span>
+          <div class="wordmark"><span>SYNAPSE</span>SYSTEM</div>
+        </footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
